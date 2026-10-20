@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Bahandi — City Tycoon</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/tycoon-ui.css" />
+</head>
+<body>
+
+  <header class="game-header">
+    <div class="header-left">
+      <img src="assets/images/icons/logo_small.png" alt="Logo" class="header-logo" />
+      <h1 class="header-title">PROJECT BAHANDI <span class="header-subtitle">CITY TYCOON</span></h1>
+    </div>
+
+    <div class="header-right">
+      <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+      <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
+      <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
+
+      <div class="user-profile-widget" id="profileWidget">
+        <div class="avatar-container">
+          <img src="assets/images/avatars/avatar_01.png" alt="Avatar" class="user-avatar" id="img-user-avatar" width="28" height="28" onerror="this.onerror=null; this.src='https://via.placeholder.com/28';" />
+        </div>
+        <div class="user-meta">
+          <span class="username" id="txt-username">HeritageBuilder</span>
+          <span class="user-level">Level <span id="txt-user-level">1</span></span>
+        </div>
+        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+
+        <div class="profile-dropdown hidden" id="profileDropdown">
+          <a href="#" class="dropdown-item"><i class="fa-solid fa-user"></i> Profile</a>
+          <a href="#" class="dropdown-item"><i class="fa-solid fa-gear"></i> Settings</a>
+          <div class="dropdown-divider"></div>
+          <a href="Login.html" class="dropdown-item text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="hud-top-bar">
+    <div class="hud-card city-badge-card">
+      <div class="badge-icon-wrap">
+        <span class="city-level-badge" id="hud-city-level">1</span>
+      </div>
+      <div class="city-xp-wrap">
+        <div class="city-name" id="hud-city-name">Molo Heritage City</div>
+        <div class="xp-bar-bg">
+          <div class="xp-bar-fill" id="hud-xp-fill" style="width: 25%;"></div>
+        </div>
+        <div class="xp-text"><span id="hud-xp-current">250</span> / <span id="hud-xp-max">1,000</span> XP</div>
+      </div>
+    </div>
+
+    <div class="hud-currencies-group">
+      <div class="currency-pill">
+        <img src="assets/images/icons/icon_cash.png" alt="Cash" class="pill-icon" />
+        <div class="pill-data">
+          <span class="pill-val" id="val-cash">100,000</span>
+          <span class="pill-rate" id="rate-cash">+0/s</span>
+        </div>
+      </div>
+
+      <div class="currency-pill">
+        <img src="assets/images/icons/icon_token.png" alt="Tokens" class="pill-icon" />
+        <div class="pill-data">
+          <span class="pill-val" id="val-tokens">0</span>
+        </div>
+      </div>
+
+      <div class="currency-pill">
+        <img src="assets/images/icons/icon_kit_basic.png" alt="Basic Kits" class="pill-icon" />
+        <div class="pill-data">
+          <span class="pill-label">BASIC</span>
+          <span class="pill-val" id="val-kits-basic">0</span>
+        </div>
+      </div>
+
+      <div class="currency-pill">
+        <img src="assets/images/icons/icon_kit_advanced.png" alt="Adv Kits" class="pill-icon" />
+        <div class="pill-data">
+          <span class="pill-label">ADVANCED</span>
+          <span class="pill-val" id="val-kits-advanced">0</span>
+        </div>
+      </div>
+
+      <div class="currency-pill">
+        <img src="assets/images/icons/icon_kit_landmark.png" alt="Landmark Kits" class="pill-icon" />
+        <div class="pill-data">
+          <span class="pill-label">LANDMARK</span>
+          <span class="pill-val" id="val-kits-landmark">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line 101: Map Container & Canvas Engine -->
+  <main class="viewport-2d-container" id="map-container">
+    <canvas id="city-canvas"></canvas>
+  </main>
+
+  <footer class="bottom-dock">
+    <div class="dock-tabs-container">
+      <button class="dock-tab-btn" data-tab="tab-build">
+        <img src="assets/images/icons/tab_build.png" class="dock-tab-icon" alt="Build" />
+        <span>BUILD</span>
+      </button>
+
+      <button class="dock-tab-btn" data-tab="tab-city-dev">
+        <img src="assets/images/icons/tab_city_dev.png" class="dock-tab-icon" alt="City Dev" />
+        <span>CITY DEV</span>
+      </button>
+
+      <button class="dock-tab-btn" data-tab="tab-landmarks">
+        <img src="assets/images/icons/tab_landmarks.png" class="dock-tab-icon" alt="Landmarks" />
+        <span>LANDMARKS</span>
+      </button>
+
+      <button class="dock-tab-btn" data-tab="tab-production">
+        <img src="assets/images/icons/tab_production.png" class="dock-tab-icon" alt="Production" />
+        <span>PRODUCTION</span>
+      </button>
+
+      <button class="dock-tab-btn" data-tab="tab-map-theme">
+        <img src="assets/images/icons/tab_map_theme.png" class="dock-tab-icon" alt="Map Theme" />
+        <span>MAP THEME</span>
+      </button>
+
+      <button class="dock-tab-btn" data-tab="tab-shop">
+        <img src="assets/images/icons/tab_shop.png" class="dock-tab-icon" alt="Shop" />
+        <span>SHOP</span>
+      </button>
+
+      <button class="dock-tab-btn" data-tab="tab-quests">
+        <img src="assets/images/icons/tab_quests.png" class="dock-tab-icon" alt="Goals" />
+        <span>GOALS</span>
+      </button>
+    </div>
+  </footer>
+
+  <div class="workspace-panel-overlay hidden" id="workspaceOverlay">
+    
+    <div class="workspace-panel hidden" id="tab-build">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic1.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_build.png" class="banner-title-logo" alt="Build Logo" />
+          <div>
+            <h2 class="banner-title">BUILD MAIN STRUCTURES</h2>
+            <p class="banner-subtitle">Construct Factories, Restaurants, Motels, and Markets</p>
+          </div>
+        </div>
+        <button class="panel-close-btn" data-close="tab-build"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body">
+        <aside class="panel-sidebar">
+          <span class="sidebar-category-label">SELECT STRUCTURE</span>
+          <button class="sidebar-btn active" data-category="factory">
+            <img src="assets/images/icons/side_factory.png" alt="Factory" />
+            <span>FACTORY</span>
+          </button>
+          <button class="sidebar-btn" data-category="restaurant">
+            <img src="assets/images/icons/side_restaurant.png" alt="Restaurant" />
+            <span>RESTAURANT</span>
+          </button>
+          <button class="sidebar-btn" data-category="motel">
+            <img src="assets/images/icons/side_motel.png" alt="Motel" />
+            <span>MOTEL / HOTEL</span>
+          </button>
+          <button class="sidebar-btn" data-category="market">
+            <img src="assets/images/icons/side_market.png" alt="Market" />
+            <span>MARKET</span>
+          </button>
+        </aside>
+
+        <section class="panel-content-area">
+          <div class="content-header-bar">
+            <h3 class="category-title" id="txt-build-category-title">FACTORIES</h3>
+            <span class="slot-counter" id="txt-build-slot-counter">(1 / 3 SLOTS USED)</span>
+            <span class="build-hint" id="txt-build-hint">Construct structures to generate resources and income</span>
+          </div>
+
+          <!-- Building cards are rendered dynamically by UIController.renderBuildCategory() -->
+          <div class="cards-scroll-grid" id="build-cards-container"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="workspace-panel hidden" id="tab-city-dev">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic2.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_city_dev.png" class="banner-title-logo" alt="City Dev Logo" />
+          <div>
+            <h2 class="banner-title">CITY DEVELOPMENT <span class="badge-title-sub">(CITY TYCOON)</span></h2>
+            <p class="banner-subtitle">Controls overall global City Level. Unlocks slots, increases multipliers, and expands territory.</p>
+          </div>
+        </div>
+
+        <div class="banner-city-level-badge">
+          <div class="badge-shield-frame">
+            <span class="shield-level-num" id="dev-header-city-level">1</span>
+          </div>
+          <div class="badge-xp-info">
+            <span class="xp-title">CITY TYCOON LEVEL</span>
+            <div class="xp-bar-container">
+              <div class="xp-fill-bar" id="dev-xp-fill" style="width: 70%;"></div>
+            </div>
+            <span class="xp-numbers"><span id="dev-xp-current">850</span> / <span id="dev-xp-max">1,200</span> XP</span>
+          </div>
+        </div>
+
+        <button class="panel-close-btn" data-close="tab-city-dev"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body single-container-layout">
+        <div class="section-divider-title">
+          <span>DEVELOPMENT OVERVIEW</span>
+          <p>Complete all three development categories to advance to the next City Level.</p>
+        </div>
+
+        <div class="categories-grid">
+          <div class="category-dev-card">
+            <img src="assets/images/icons/cat_infrastructure.png" class="cat-card-img" alt="Infrastructure" />
+            <h4 class="cat-card-title">INFRASTRUCTURE DEVELOPMENT</h4>
+            <p class="cat-card-desc">Roads, bridges, walkways, and transport systems.</p>
+            
+            <div class="dev-progress-bar-wrap">
+              <div class="dev-progress-fill" id="fill-dev-infra" style="width: 40%;"></div>
+            </div>
+            <span class="dev-progress-text" id="txt-dev-infra">40 / 100</span>
+
+            <div class="next-upgrade-reqs">
+              <span class="req-tag">NEXT UPGRADE (+20)</span>
+              <div class="req-icons-row" id="req-dev-infra"></div>
+            </div>
+
+            <button class="btn-action-green" id="btn-upgrade-dev-infra" data-branch="roads">UPGRADE</button>
+          </div>
+
+          <div class="category-dev-card">
+            <img src="assets/images/icons/cat_urban.png" class="cat-card-img" alt="Urban" />
+            <h4 class="cat-card-title">URBAN DEVELOPMENT</h4>
+            <p class="cat-card-desc">Residential buildings, public infrastructure, and commercial zones.</p>
+            
+            <div class="dev-progress-bar-wrap">
+              <div class="dev-progress-fill" id="fill-dev-urban" style="width: 20%;"></div>
+            </div>
+            <span class="dev-progress-text" id="txt-dev-urban">20 / 100</span>
+
+            <div class="next-upgrade-reqs">
+              <span class="req-tag">NEXT UPGRADE (+20)</span>
+              <div class="req-icons-row" id="req-dev-urban"></div>
+            </div>
+
+            <button class="btn-action-green" id="btn-upgrade-dev-urban" data-branch="urban">UPGRADE</button>
+          </div>
+
+          <div class="category-dev-card">
+            <img src="assets/images/icons/cat_environmental.png" class="cat-card-img" alt="Environment" />
+            <h4 class="cat-card-title">ENVIRONMENTAL DEVELOPMENT</h4>
+            <p class="cat-card-desc">Trees, streetlights, electrical wiring, parks, and other public properties.</p>
+            
+            <div class="dev-progress-bar-wrap">
+              <div class="dev-progress-fill" id="fill-dev-env" style="width: 60%;"></div>
+            </div>
+            <span class="dev-progress-text" id="txt-dev-env">60 / 100</span>
+
+            <div class="next-upgrade-reqs">
+              <span class="req-tag">NEXT UPGRADE (+20)</span>
+              <div class="req-icons-row" id="req-dev-env"></div>
+            </div>
+
+            <button class="btn-action-green" id="btn-upgrade-dev-env" data-branch="environment">UPGRADE</button>
+          </div>
+        </div>
+
+        <div class="next-level-reward-footer">
+          <div class="reward-lock-badge" id="dev-reward-badge"><i class="fa-solid fa-lock"></i></div>
+          <div class="reward-info-group">
+            <span class="reward-header">NEXT CITY LEVEL REWARD</span>
+            <div class="reward-pills-row">
+              <span><i class="fa-solid fa-building"></i> +1 Building Slots</span>
+              <span><i class="fa-solid fa-coins"></i> +5% Income Multiplier</span>
+              <span><i class="fa-solid fa-users"></i> +5% Tourism Boost</span>
+              <span><i class="fa-solid fa-map"></i> New Map Area Unlocked</span>
+            </div>
+          </div>
+          <button class="btn-action-green btn-advance hidden" id="btn-advance-city">ADVANCE CITY LEVEL</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="workspace-panel hidden" id="tab-production">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic4.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_production.png" class="banner-title-logo" alt="Production Logo" />
+          <div>
+            <h2 class="banner-title">FACTORY PRODUCTION</h2>
+            <p class="banner-subtitle">Craft Basic, Advanced, and Landmark Construction Kits</p>
+          </div>
+        </div>
+        <button class="panel-close-btn" data-close="tab-production"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body">
+        <aside class="panel-sidebar">
+          <div class="sidebar-header-stats">
+            <span class="sidebar-category-label">FACTORIES</span>
+            <span class="total-prod-rate" id="txt-prod-total-rate">TOTAL: +0 Kits/min</span>
+          </div>
+
+          <!-- Factory list is rendered dynamically by UIController.renderProductionDetails() -->
+          <div id="prod-factories-list"></div>
+        </aside>
+
+        <section class="panel-content-area production-layout">
+          <div class="factory-details-top">
+            <div class="fac-title-block">
+              <h3 class="fac-name" id="txt-prod-fac-name">FACTORY 1</h3>
+              <span class="fac-level-badge" id="txt-prod-fac-level">Level 1</span>
+            </div>
+
+            <img src="assets/images/buildings/factory_1.png" class="fac-display-img" id="img-prod-fac-display" alt="Active Factory" />
+
+            <div class="fac-stats-box">
+              <div class="stat-row">
+                <span class="lbl">Production Rate</span>
+                <span class="val text-green" id="txt-prod-fac-rate">+10 Kits/min</span>
+              </div>
+              <div class="stat-row">
+                <span class="lbl">Production Time</span>
+                <span class="val" id="txt-prod-fac-time">1m 00s</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="materials-strip">
+            <span class="mat-chip"><img src="assets/images/icons/icon_wood.png" alt="Wood" /> Wood <strong id="mat-wood">100</strong></span>
+            <span class="mat-chip"><img src="assets/images/icons/icon_concrete.png" alt="Concrete" /> Concrete <strong id="mat-concrete">30</strong></span>
+            <span class="mat-chip"><img src="assets/images/icons/icon_metal.png" alt="Metal" /> Metal <strong id="mat-metal">50</strong></span>
+            <span class="mat-chip" id="mat-cap-note">Stockpile Cap: 999</span>
+          </div>
+
+          <span class="section-sublabel">SELECT CONSTRUCTION KIT TO PRODUCE</span>
+          <div class="kit-selection-grid">
+            <div class="kit-select-card active" data-kit-type="basic">
+              <button class="card-info-btn"></button>
+              <h5 class="kit-card-name">BASIC CONSTRUCTION KIT</h5>
+              <img src="assets/images/icons/icon_kit_basic.png" class="kit-card-icon" />
+              <span class="owned-tag">You Own: <strong id="txt-owned-basic-kits">0</strong></span>
+            </div>
+
+            <div class="kit-select-card" data-kit-type="advanced">
+              <button class="card-info-btn"></button>
+              <h5 class="kit-card-name">ADVANCED CONSTRUCTION KIT</h5>
+              <img src="assets/images/icons/icon_kit_advanced.png" class="kit-card-icon" />
+              <span class="owned-tag">You Own: <strong id="txt-owned-adv-kits">0</strong></span>
+            </div>
+
+            <div class="kit-select-card" data-kit-type="landmark">
+              <button class="card-info-btn"></button>
+              <h5 class="kit-card-name">LANDMARK CONSTRUCTION KIT</h5>
+              <img src="assets/images/icons/icon_kit_landmark.png" class="kit-card-icon" />
+              <span class="owned-tag">You Own: <strong id="txt-owned-landmark-kits">0</strong></span>
+            </div>
+          </div>
+
+          <div class="production-bottom-row">
+            <div class="material-req-box">
+              <h5 class="box-title" id="txt-selected-kit-title">BASIC CONSTRUCTION KIT</h5>
+              <p class="box-desc" id="txt-selected-kit-desc">Essential materials for constructing and upgrading buildings in your city.</p>
+              
+              <span class="req-header">REQUIRES</span>
+              <div class="req-materials-list" id="container-kit-materials"></div>
+            </div>
+
+            <div class="progress-action-box">
+              <span class="box-title">PRODUCTION PROGRESS</span>
+              <div class="time-progress-bar-wrap">
+                <div class="time-progress-fill" id="fill-prod-timer" style="width: 0%;"></div>
+                <span class="time-readout" id="txt-prod-timer-readout">Idle</span>
+              </div>
+              <span class="output-counter">Current Output: <strong id="txt-current-output-count">0 / 10</strong></span>
+
+              <div class="action-btn-group">
+                <button class="btn-action-green" id="btn-start-prod">START PRODUCTION</button>
+                <button class="btn-action-purple" id="btn-speedup-prod">
+                  SPEED UP <img src="assets/images/icons/icon_token.png" alt="Tokens" /> 10
+                </button>
+                <button class="btn-action-red" id="btn-cancel-prod">CANCEL PRODUCTION</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="workspace-panel hidden" id="tab-landmarks">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic3.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_landmarks.png" class="banner-title-logo" alt="Landmarks" />
+          <div>
+            <h2 class="banner-title">HERITAGE LANDMARKS</h2>
+            <p class="banner-subtitle">Restore historic sites to earn Tourism Rating, Tokens, and XP</p>
+          </div>
+        </div>
+
+        <div class="tourism-summary">
+          <span class="tourism-label"><i class="fa-solid fa-camera"></i> TOURISM RATING</span>
+          <strong id="txt-tourism-points">0</strong>
+          <span class="tourism-rate" id="txt-tourism-rate">+0/s</span>
+        </div>
+
+        <button class="panel-close-btn" data-close="tab-landmarks"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body single-container-layout">
+        <div class="section-divider-title">
+          <span>DISCOVERED SITES</span>
+          <p>Spend Landmark Kits, Tokens, and Cash to bring each landmark back to life.</p>
+        </div>
+        <div class="list-grid-2" id="landmarks-list"></div>
+      </div>
+    </div>
+
+    <div class="workspace-panel hidden" id="tab-map-theme">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic5.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_map_theme.png" class="banner-title-logo" alt="Map Theme" />
+          <div>
+            <h2 class="banner-title">MAP THEMES</h2>
+            <p class="banner-subtitle">Unlock and apply atmospheres to your 2.5D city map</p>
+          </div>
+        </div>
+        <button class="panel-close-btn" data-close="tab-map-theme"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body single-container-layout">
+        <div class="section-divider-title">
+          <span>CITY ATMOSPHERE</span>
+          <p>Owned themes can be re-applied anytime. Purchased themes are permanent.</p>
+        </div>
+        <div class="list-grid-2" id="themes-grid"></div>
+      </div>
+    </div>
+
+    <div class="workspace-panel hidden" id="tab-shop">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic6.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_shop.png" class="banner-title-logo" alt="Shop" />
+          <div>
+            <h2 class="banner-title">CITY SHOP</h2>
+            <p class="banner-subtitle">Convert surplus Cash and Tokens into materials, kits, and boosts</p>
+          </div>
+        </div>
+        <button class="panel-close-btn" data-close="tab-shop"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body single-container-layout">
+        <div class="section-divider-title">
+          <span>SPECIAL OFFERS</span>
+          <p>Instant delivery to your city warehouse and wallet.</p>
+        </div>
+        <div class="list-grid-3" id="shop-grid"></div>
+      </div>
+    </div>
+
+    <div class="workspace-panel hidden" id="tab-quests">
+      <div class="panel-header-banner" style="background-image: url('assets/images/tabpic7.png');">
+        <div class="header-banner-content">
+          <img src="assets/images/icons/title_quests.png" class="banner-title-logo" alt="Goals" />
+          <div>
+            <h2 class="banner-title">GOALS & ACHIEVEMENTS</h2>
+            <p class="banner-subtitle">Complete civic missions for XP, Cash, and rare Tokens</p>
+          </div>
+        </div>
+        <button class="panel-close-btn" data-close="tab-quests"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="panel-body single-container-layout">
+        <div class="section-divider-title">
+          <span>ACTIVE MISSIONS</span>
+          <p>Missions track your live progress and refresh as the city grows.</p>
+        </div>
+        <div class="list-grid-2" id="quests-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Floating Command Tab: grants Cash, Tokens, and Construction Kits -->
+  <button class="dev-bubble" id="devToggleBtn" title="Command Tab — add currency &amp; kits">
+    <i class="fa-solid fa-wand-magic-sparkles"></i>
+  </button>
+
+  <div class="dev-panel hidden" id="devPanel">
+    <div class="dev-panel-head">
+      <span><i class="fa-solid fa-terminal"></i> COMMAND TAB</span>
+      <button class="dev-close-btn" id="devCloseBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <p class="dev-panel-hint">Pick a currency or kit, then choose an amount.</p>
+
+    <div class="dev-targets" id="devTargets"></div>
+
+    <div class="dev-amount-row" id="devAmounts">
+      <button class="dev-amount-btn" data-amount="100">+100</button>
+      <button class="dev-amount-btn" data-amount="1000">+1,000</button>
+      <button class="dev-amount-btn" data-amount="10000">+10,000</button>
+      <button class="dev-amount-btn" data-amount="100000">+100,000</button>
+    </div>
+
+    <div class="dev-custom-row">
+      <input type="number" id="devCustomAmount" placeholder="Custom amount" min="1" step="1" />
+      <button class="btn-action-green dev-add-btn" id="devAddBtn">ADD</button>
+    </div>
+
+    <div class="dev-panel-foot">
+      <span class="dev-current" id="devCurrentValue">—</span>
+      <button class="btn-action-red btn-reset" id="devResetBtn">RESET SAVE</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/tycoon-app.js"></script>
+</body>
+</html>
